@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CryptoKitties Transfer</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      textarea {
+        width: 100%;
+        min-height: 100px;
+        margin: 10px 0;
+      }
+      button {
+        padding: 10px 20px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      button:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+      }
+      #status {
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 4px;
+      }
+      .success {
+        background-color: #dff0d8;
+        color: #3c763d;
+      }
+      .error {
+        background-color: #f2dede;
+        color: #a94442;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>CryptoKitties Transfer</h1>
+
+      <div id="wallet-status">Wallet not connected</div>
+      <button id="connect-wallet">Connect Wallet</button>
+
+      <div>
+        <h3>Kitty IDs</h3>
+        <p>Enter kitty IDs separated by commas or new lines</p>
+        <textarea
+          id="kitty-ids"
+          placeholder="Example: 123, 456, 789"
+        ></textarea>
+      </div>
+
+      <div>
+        <h3>Recipient Address</h3>
+        <input
+          type="text"
+          id="recipient"
+          placeholder="Enter recipient address"
+          style="width: 100%; padding: 8px"
+        />
+      </div>
+
+      <button id="transfer" disabled>Transfer Kitties</button>
+      <div id="status"></div>
+
+      <div
+        id="failed-transfers"
+        style="
+          display: none;
+          margin-top: 20px;
+          padding: 15px;
+          background-color: #fff3f3;
+          border: 1px solid #ffcdd2;
+          border-radius: 4px;
+        "
+      >
+        <h3>Failed Transfers</h3>
+        <p>
+          These kitties failed to transfer. You can try transferring them again:
+        </p>
+        <textarea
+          id="failed-kitties"
+          rows="5"
+          style="width: 100%; margin-bottom: 10px"
+        ></textarea>
+        <button
+          id="retry-failed"
+          style="
+            background-color: #f44336;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+          "
+        >
+          Retry Failed Transfers
+        </button>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
