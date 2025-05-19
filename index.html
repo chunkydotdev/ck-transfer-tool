@@ -46,11 +46,147 @@
         background-color: #f2dede;
         color: #a94442;
       }
+      .instructions {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+      }
+      .instructions code {
+        background-color: #e9ecef;
+        padding: 2px 4px;
+        border-radius: 3px;
+        font-family: monospace;
+      }
+      .instructions pre {
+        background-color: #e9ecef;
+        padding: 15px;
+        border-radius: 4px;
+        overflow-x: auto;
+      }
+      .copy-btn {
+        padding: 5px 16px;
+        font-size: 0.95em;
+        border-radius: 4px;
+        border: none;
+        background: #4caf50;
+        color: #fff;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .copy-btn:hover {
+        background: #388e3c;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
     </style>
   </head>
   <body>
     <div class="container">
       <h1>CryptoKitties Transfer</h1>
+
+      <div class="instructions">
+        <h2>How to use</h2>
+        <ol>
+          <li>
+            Go to
+            <a href="https://www.cryptokitties.co/search" target="_blank"
+              >https://www.cryptokitties.co/search</a
+            >
+          </li>
+          <li>Press f12 to open the console</li>
+          <li>Find the network tab</li>
+          <li>Select the Fetch/XHR tab</li>
+          <li>Click the request to https://api.cryptokitties.co/v3/kitties</li>
+          <li>Enter authorization key from the request:</li>
+          <li>Enter your wallet address</li>
+        </ol>
+        <div style="margin: 15px 0">
+          <div style="margin-bottom: 10px">
+            <label for="auth-wallet" style="display: block; margin-bottom: 5px"
+              >Wallet Address:</label
+            >
+            <input
+              type="text"
+              id="auth-wallet"
+              placeholder="Enter your wallet address"
+              style="
+                width: calc(100% - 20px);
+                padding: 8px;
+                margin-bottom: 10px;
+              "
+            />
+          </div>
+          <div style="margin-bottom: 10px">
+            <label for="auth-token" style="display: block; margin-bottom: 5px"
+              >Authorization Key:</label
+            >
+            <input
+              type="text"
+              id="auth-token"
+              placeholder="Enter your authorization key"
+              style="width: calc(100% - 20px); padding: 8px"
+            />
+          </div>
+          <button
+            id="fetch-kitty-ids"
+            style="
+              margin-top: 10px;
+              background: #2196f3;
+              color: #fff;
+              border: none;
+              border-radius: 4px;
+              padding: 5px 16px;
+              font-size: 0.95em;
+              cursor: pointer;
+              transition: background 0.2s;
+              position: relative;
+              display: inline-flex;
+              align-items: center;
+              gap: 8px;
+            "
+          >
+            <span>Fetch Kitty IDs</span>
+            <span
+              id="fetch-spinner"
+              style="
+                display: none;
+                width: 18px;
+                height: 18px;
+                border: 2px solid #fff;
+                border-top: 2px solid #2196f3;
+                border-radius: 50%;
+                animation: spin 0.8s linear infinite;
+              "
+            ></span>
+          </button>
+        </div>
+        <div style="margin-bottom: 15px">
+          <img
+            src="helper-image.png"
+            alt="How to get your authorization key"
+            style="
+              max-width: 100%;
+              border: 1px solid #ccc;
+              border-radius: 4px;
+              box-shadow: 0 2px 8px #0001;
+            "
+          />
+          <div style="font-size: 0.95em; color: #555; margin-top: 5px">
+            How to get your authorization key
+          </div>
+        </div>
+        <p>
+          8. Click <b>Fetch Kitty IDs</b> to automatically fill in your Kitty
+          IDs below.
+        </p>
+      </div>
 
       <div id="wallet-status">Wallet not connected</div>
       <button id="connect-wallet">Connect Wallet</button>

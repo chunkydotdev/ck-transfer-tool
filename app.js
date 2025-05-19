@@ -29,6 +29,12 @@ const walletStatus = document.getElementById('wallet-status');
 const kittyIdsInput = document.getElementById('kitty-ids');
 const recipientInput = document.getElementById('recipient');
 const statusDiv = document.getElementById('status');
+const fetchCode = document.getElementById('fetch-code');
+const generateScriptBtn = document.getElementById('generate-script');
+const authToken = document.getElementById('auth-token');
+const authWallet = document.getElementById('auth-wallet');
+const fetchKittyIdsBtn = document.getElementById('fetch-kitty-ids');
+const fetchSpinner = document.getElementById('fetch-spinner');
 
 // Initialize Web3 and contract
 async function init() {
@@ -154,4 +160,86 @@ document.getElementById('retry-failed').addEventListener('click', () => {
     failedKittiesInput.value = '';
     document.getElementById('failed-transfers').style.display = 'none';
     transferKitties();
-}); 
+});
+
+if (fetchKittyIdsBtn) {
+    fetchKittyIdsBtn.addEventListener('click', async () => {
+        const wallet = authWallet.value.trim();
+        const token = authToken.value.trim();
+        if (!wallet || !token) {
+            showStatus('Please enter both wallet address and authorization token.', 'error');
+            return;
+        }
+        // Show spinner and disable button
+        if (fetchSpinner) fetchSpinner.style.display = 'inline-block';
+        fetchKittyIdsBtn.disabled = true;
+        showStatus('Fetching kitty IDs...', 'success');
+        try {
+            const limit = 20;
+            let offset = 0;
+            let allIds = [];
+            // Fetch first page to get total
+            const firstResponse = await fetch(`https://api.cryptokitties.co/v3/kitties?include=other&orderBy=age&orderDirection=asc&offset=${offset}&limit=${limit}&owner_wallet_address=${wallet}`, {
+                headers: {
+                    'accept': '*/*',
+                    'accept-language': 'en-US,en;q=0.9',
+                    'authorization': token,
+                    'if-none-match': 'W/"f474-kXsYFO5VU/etBpgG5EnGyP/47LE"',
+                    'sec-ch-ua': '"Not(A:Brand";v="99", "Google Chrome";v="133", "Chromium";v="133"',
+                    'sec-ch-ua-mobile': '?0',
+                    'sec-ch-ua-platform': '"macOS"',
+                    'sec-fetch-dest': 'empty',
+                    'sec-fetch-mode': 'cors',
+                    'sec-fetch-site': 'same-site',
+                    'Referer': 'https://www.cryptokitties.co/',
+                    'Referrer-Policy': 'strict-origin-when-cross-origin'
+                }
+            });
+            if (!firstResponse.ok) throw new Error('Failed to fetch kitties');
+            const firstData = await firstResponse.json();
+            allIds.push(...(firstData.kitties || []).map(kitty => kitty.id));
+            const total = firstData.total || allIds.length;
+            const requests = [];
+            for (let nextOffset = limit; nextOffset < total; nextOffset += limit) {
+                requests.push(
+                    fetch(`https://api.cryptokitties.co/v3/kitties?include=other&orderBy=age&orderDirection=asc&offset=${nextOffset}&limit=${limit}&owner_wallet_address=${wallet}`, {
+                        headers: {
+                            'accept': '*/*',
+                            'accept-language': 'en-US,en;q=0.9',
+                            'authorization': token,
+                            'if-none-match': 'W/"f474-kXsYFO5VU/etBpgG5EnGyP/47LE"',
+                            'sec-ch-ua': '"Not(A:Brand";v="99", "Google Chrome";v="133", "Chromium";v="133"',
+                            'sec-ch-ua-mobile': '?0',
+                            'sec-ch-ua-platform': '"macOS"',
+                            'sec-fetch-dest': 'empty',
+                            'sec-fetch-mode': 'cors',
+                            'sec-fetch-site': 'same-site',
+                            'Referer': 'https://www.cryptokitties.co/',
+                            'Referrer-Policy': 'strict-origin-when-cross-origin'
+                        }
+                    })
+                );
+            }
+            // Fetch all remaining pages in parallel
+            const responses = await Promise.all(requests);
+            for (const resp of responses) {
+                if (resp.ok) {
+                    const data = await resp.json();
+                    allIds.push(...(data.kitties || []).map(kitty => kitty.id));
+                }
+            }
+            if (allIds.length) {
+                kittyIdsInput.value = allIds.join(', ');
+                showStatus(`Fetched ${allIds.length} kitty IDs and filled in the input.`, 'success');
+            } else {
+                showStatus('No kitties found for this wallet.', 'error');
+            }
+        } catch (err) {
+            showStatus('Error fetching kitty IDs: ' + err.message, 'error');
+        } finally {
+            // Hide spinner and enable button
+            if (fetchSpinner) fetchSpinner.style.display = 'none';
+            fetchKittyIdsBtn.disabled = false;
+        }
+    });
+} 
